@@ -14,6 +14,7 @@ namespace FCCAnalyses{
 
 namespace myUtils{
 
+
   struct FCCAnalysesComposite{
     TLorentzVector particle;
     ROOT::VecOps::RVec<int> index;//index in the RP
@@ -29,6 +30,9 @@ namespace myUtils{
     int charge;
     int mc_index;
   };
+
+  std::pair<ROOT::VecOps::RVec<FCCAnalysesComposite2>, ROOT::VecOps::RVec<FCCAnalysesComposite2>> build_Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                                                                                                                       ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop, bool clean);//, ROOT::VecOps::RVec<int> recind, ROOT::VecOps::RVec<int> mcind);
 
   struct filter_PV{
     filter_PV(bool arg_pv);

@@ -13,6 +13,109 @@ namespace FCCAnalyses{
 
 namespace myUtils{
 
+std::pair<ROOT::VecOps::RVec<FCCAnalysesComposite2>, ROOT::VecOps::RVec<FCCAnalysesComposite2>> build_Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                                                                                                                       ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop, bool clean){
+            //Bd2KstNuNu
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> resultL;
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> resultMu;
+
+            int events = 0;
+
+            FCCAnalysesComposite2 compL;
+            FCCAnalysesComposite2 compMu;
+            FCCAnalysesComposite2 savedL;
+            FCCAnalysesComposite2 savedMu;
+
+//   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>
+// SelPrimaryTracks(ROOT::VecOps::RVec<int> recind, ROOT::VecOps::RVec<int> mcind,
+//                  ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco,
+//                  ROOT::VecOps::RVec<edm4hep::MCParticleData> mc,
+//                  TVector3 MC_EventPrimaryVertex)
+    int counterL = 0;
+    int pcount = 0;
+    double max = 0;
+    bool valid = false;
+    for (auto &p: vertex) {
+        if (p.vertex.primary) {
+            counterL += 1; continue;
+        }
+        if (p.ntracks != 2) {
+            counterL += 1; continue;
+        }
+        int charge_p=0;
+        int nobj_p=0;
+        for (auto &r:p.reco_ind){
+            if (recop.at(r).type==2212){
+                nobj_p+=1;
+                charge_p+=recop.at(r).charge;
+            }
+        }
+        int charge_pi=0;
+        int nobj_pi=0;
+        for (auto &r:p.reco_ind){
+            if (recop.at(r).type==211){
+                nobj_pi+=1;
+                charge_pi+=recop.at(r).charge;
+            }
+        }
+        if (nobj_pi == 1 && nobj_p == 1 && charge_pi+charge_p == 0) {
+            compL.vertex = counterL;
+            compL.particle = build_tlv(recop,p.reco_ind);
+            compL.charge = charge_pi+charge_p;
+            pcount += 1;
+            int counterMu = 0;
+            for (auto &q:vertex) {
+                if (q.vertex.primary) {
+                    counterMu += 1; continue;
+                }
+                if (q.ntracks != 2) {
+                    counterMu += 1; continue;
+                }
+                int charge_mumu=0;
+                int nobj_mumu=0;
+                for (auto &s:q.reco_ind){
+                    if (recop.at(s).type==13){
+                        nobj_mumu+=1;
+                        charge_mumu+=recop.at(s).charge;
+                    }
+                }
+                if (nobj_mumu == 2 && charge_mumu == 0) {
+                    compMu.vertex = counterMu;
+                    compMu.particle = build_tlv(recop,q.reco_ind);
+                    compMu.charge = charge_pi+charge_p;
+
+                    double alignment = compMu.particle[0]*compL.particle[0] + compMu.particle[1]*compL.particle[1] + compMu.particle[2]*compL.particle[2];
+                    if (alignment > max) {
+                        max = alignment;
+                        savedL = compL;
+                        savedMu = compMu;
+                        valid = true;
+                    }
+                }
+                counterMu += 1;
+            }
+
+
+        }
+        counterL += 1;
+    }
+    if (valid) {
+        if (clean) {
+            if (pcount == 1) {
+                resultL.push_back(savedL);
+                resultMu.push_back(savedMu);
+            }
+        }
+        else {
+            resultL.push_back(savedL);
+            resultMu.push_back(savedMu);
+        }
+    }
+
+    return std::make_pair(resultL, resultMu);
+}
+
+
 float get_d0(TVector3 x, TVector3 p){
   float D = x[1]*p[0]/sqrt(p[0]*p[0]+p[1]*p[1])-x[0]*p[1]/sqrt(p[0]*p[0]+p[1]*p[1]);
   return D;
