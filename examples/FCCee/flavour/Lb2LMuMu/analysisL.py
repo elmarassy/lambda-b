@@ -158,8 +158,7 @@ class RDFanalysis():
 
                #.Define("LCands",         "FCCAnalyses::myUtils::Lb2LMuMuHelper(FCCAnalyses::myUtils::Lb2LMuMuHelper(TotalCands,0), 0)")
                #.Define("LCands",         "FCCAnalyses::myUtils::Lb2LMuMuHelper(FCCAnalyses::myUtils::Lb2LMuMuHelper(TotalCands,0), 1)")
-               .Define("LCands",         "(TotalCands.first).first")
-               .Define("anti",         "(TotalCands.first).second")
+               .Define("LCands",         "TotalCands.first")
 
 
                .Define("MuCands", "TotalCands.second")
@@ -501,7 +500,7 @@ class RDFanalysis():
         "LCandidates_mass", "LCandidates_vertex", "LCandidates_mcvertex", "LCandidates_B",
         "LCandidates_truth",
         "LCandidates_px", "LCandidates_py", "LCandidates_pz", "LCandidates_p", "LCandidates_q",
-        "LCandidates_d0",  "LCandidates_z0","LCandidates_anglethrust", "anti",
+        "LCandidates_d0",  "LCandidates_z0","LCandidates_anglethrust",
 
         # "LCandidates_mass2", "LCandidates_px2", "LCandidates_py2","LCandidates_pz2","LCandidates_p2",
 
