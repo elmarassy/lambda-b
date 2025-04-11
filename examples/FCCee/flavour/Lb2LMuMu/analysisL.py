@@ -442,8 +442,8 @@ class RDFanalysis():
                .Define("flightDistancesLb",           "Lb2LMuMu.flightDistancesLb")
                .Define("flightDistancesL",           "Lb2LMuMu.flightDistancesL")
 
-               .Define("primaryLbImpactParams",           "Lb2LMuMu.primaryLbImpactParams")
-               .Define("muonHadronImpactParams",           "Lb2LMuMu.muonHadronImpactParams")
+               .Define("primaryLbImpactParams",           "Lb2LMuMu.primaryLbImpactParameters")
+               .Define("muonHadronImpactParams",           "Lb2LMuMu.muonHadronImpactParameters")
                .Define("displacementProduct",              "Lb2LMuMu.displacementProduct"))
         return df2
     #__________________________________________________________
