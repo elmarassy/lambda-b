@@ -87,7 +87,7 @@ class RDFanalysis():
                #############################################
                ##        Build Lb -> LMuMu candidates      ##
                #############################################
-               .Define("Lb2LMuMu",          "FCCAnalyses::myUtils::Lb2LMuMu(VertexObject, RecoPartPIDAtVertex)")
+               .Define("Lb2LMuMu",          "FCCAnalyses::myUtils::testLb2LMuMu(VertexObject, RecoPartPIDAtVertex)")
 
                .Define("newLb",                "Lb2LMuMu.newTotals")
                .Define("newDimuons",           "Lb2LMuMu.newMuons")
