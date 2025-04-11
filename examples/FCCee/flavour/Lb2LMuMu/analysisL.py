@@ -510,13 +510,13 @@ class RDFanalysis():
                       "Lb_mass", "Lb_p", "Lb_px", "Lb_py", "Lb_pz",
 
                       "dimuon_mass", "dimuon_p", "dimuon_px", "dimuon_py", "dimuon_pz",
-                      "mu1_mass", "mu1_p", "mu1_px", "mu1_py", "mu1_pz", "mu1_E", "mu1_q",
-                      "mu2_mass", "mu2_p", "mu2_px", "mu2_py", "mu2_pz", "mu2_E", "mu2_q",
+                      "mu1_mass", "mu1_p", "mu1_px", "mu1_py", "mu1_pz", "mu1_q",
+                      "mu2_mass", "mu2_p", "mu2_px", "mu2_py", "mu2_pz", "mu2_q",
 
                       "dihadron_mass", "dihadron_p", "dihadron_px", "dihadron_py", "dihadron_pz",
                       "h1_mass", "h1_p", "h1_px", "h1_py", "h1_pz", "h1_q",
                       "h2_mass", "h2_p", "h2_px", "h2_py", "h2_pz", "h2_q",
-                      "h1type", "h2type",
+                      "h1_type", "h2_type",
 
                       "flightDistancesLb", "flightDistancesL",
                       "primaryLbImpactParams", "muonHadronImpactParams"
