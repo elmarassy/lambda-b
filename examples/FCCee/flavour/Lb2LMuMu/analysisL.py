@@ -406,7 +406,6 @@ class RDFanalysis():
                .Define("mu1_px",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu1, 0)")
                .Define("mu1_py",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu1, 1)")
                .Define("mu1_pz",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu1, 2)")
-               .Define("mu1_E",           "sqrt(pow(mu1_mass, 2) + pow(mu1_P, 2))")
                .Define("mu1_q",           "FCCAnalyses::myUtils::getFCCAnalysesComposite_charge(mu1)")
 
                .Define("mu2_mass",        "FCCAnalyses::myUtils::getFCCAnalysesComposite_mass(mu2)")
@@ -414,7 +413,6 @@ class RDFanalysis():
                .Define("mu2_px",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu2, 0)")
                .Define("mu2_py",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu2, 1)")
                .Define("mu2_pz",          "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(mu2, 2)")
-               .Define("mu2_E",           "sqrt(pow(mu2_mass, 2) + pow(mu2_P, 2))")
                .Define("mu2_q",           "FCCAnalyses::myUtils::getFCCAnalysesComposite_charge(mu2)")
 
 
