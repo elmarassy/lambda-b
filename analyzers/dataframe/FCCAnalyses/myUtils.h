@@ -51,21 +51,36 @@ namespace FCCAnalyses {
             //currently storing type of hadrons to use for debugging, will not be needed later
             ROOT::VecOps::RVec<int> hadron2Types;
 
+        };
+
+        struct testing {
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> oldHadrons;
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> oldMuons;
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> oldTotals;
+            ROOT::VecOps::RVec<double_t> oldPrimaryLbImpactParameters; //minimal distance between reconstructed lambdaB path and primary vertex
+            ROOT::VecOps::RVec<double_t> oldMuonHadronImpactParameters; //minimal distance between dihadron path and dimuon vertex
+            ROOT::VecOps::RVec<double_t> oldFlightDistanceL;
+            ROOT::VecOps::RVec<double_t> oldFlightDistanceLb;
+            ROOT::VecOps::RVec<double_t> oldDisplacementProduct;
+
+            ROOT::VecOps::RVec<int> oldHadron1Types;
+            ROOT::VecOps::RVec<int> oldHadron2Types;
+
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newHadrons;
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newMuons;
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newTotals;
+            ROOT::VecOps::RVec<double_t> newPrimaryLbImpactParameters; //minimal distance between reconstructed lambdaB path and primary vertex
+            ROOT::VecOps::RVec<double_t> newMuonHadronImpactParameters; //minimal distance between dihadron path and dimuon vertex
+            ROOT::VecOps::RVec<double_t> newDisplacementProduct;
+            ROOT::VecOps::RVec<double_t> newFlightDistanceL;
+            ROOT::VecOps::RVec<double_t> newFlightDistanceLb;
+            ROOT::VecOps::RVec<int> newHadron1Types;
+            ROOT::VecOps::RVec<int> newHadron2Types;
 
         };
 
-        // struct testing {
-        //     FCCAnalysesComposite2 originalHadrons;
-        //     FCCAnalysesComposite2 originalMuons;
-        //
-        //     ROOT::VecOps::RVec<FCCAnalysesComposite2> newHadrons;
-        //     ROOT::VecOps::RVec<FCCAnalysesComposite2> newMuons;
-        //     ROOT::VecOps::RVec<FCCAnalysesComposite2> newDihadrons;
-        //     ROOT::VecOps::RVec<int> hadron1Types;
-        //
-        //
-        // };
-
+        testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                               ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
         buildLb2LMuMu Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
 
