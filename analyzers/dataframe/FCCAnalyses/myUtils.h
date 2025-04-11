@@ -66,6 +66,8 @@ namespace FCCAnalyses {
         //
         // };
 
+        buildLb2LMuMu Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                               ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
 
         std::pair<ROOT::VecOps::RVec<FCCAnalysesComposite2>, ROOT::VecOps::RVec<FCCAnalysesComposite2> > build_Lb2LMuMu(
             ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
