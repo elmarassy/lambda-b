@@ -444,7 +444,7 @@ class RDFanalysis():
 
                .Define("primaryLbImpactParams",           "Lb2LMuMu.primaryLbImpactParameters")
                .Define("muonHadronImpactParams",           "Lb2LMuMu.muonHadronImpactParameters")
-               .Define("displacementProduct",              "Lb2LMuMu.displacementProduct"))
+               .Define("displacementProducts",              "Lb2LMuMu.displacementProduct"))
         return df2
     #__________________________________________________________
     #Mandatory: output function, please make sure you return the branchlist as a python list
