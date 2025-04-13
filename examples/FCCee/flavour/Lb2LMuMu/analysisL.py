@@ -519,6 +519,6 @@ class RDFanalysis():
                       "h1_type", "h2_type",
 
                       "flightDistancesLb", "flightDistancesL",
-                      "primaryLbImpactParams", "muonHadronImpactParams"
+                      "primaryLbImpactParams", "muonHadronImpactParams", "displacementProducts"
                       ]
         return branchList

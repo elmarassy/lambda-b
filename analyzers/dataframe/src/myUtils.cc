@@ -12,6 +12,13 @@
 namespace FCCAnalyses {
     namespace myUtils {
 
+
+
+
+
+
+
+
 testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop) {
     testing result;
@@ -301,8 +308,8 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     result.oldTotals.push_back(total);
                     result.oldMuonHadronImpactParameters.push_back(muonHadronImpactParam);
                     result.oldDisplacementProduct.push_back(displacementProduct);
-                    result.newHadron1Types.push_back(recop.at(vertex.at(savedL.vertex).reco_ind.at(0)).type);
-                    result.newHadron2Types.push_back(recop.at(vertex.at(savedL.vertex).reco_ind.at(1)).type);
+                    result.oldHadron1Types.push_back(recop.at(vertex.at(savedL.vertex).reco_ind.at(0)).type);
+                    result.oldHadron2Types.push_back(recop.at(vertex.at(savedL.vertex).reco_ind.at(1)).type);
                 }
             }
 

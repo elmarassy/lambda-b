@@ -53,6 +53,15 @@ namespace FCCAnalyses {
 
         };
 
+
+        struct testing2 {
+
+        };
+
+
+
+
+
         struct testing {
             ROOT::VecOps::RVec<FCCAnalysesComposite2> oldHadrons;
             ROOT::VecOps::RVec<FCCAnalysesComposite2> oldMuons;
@@ -79,7 +88,7 @@ namespace FCCAnalyses {
 
         };
 
-        testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+        testing testuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
         buildLb2LMuMu Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
