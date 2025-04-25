@@ -162,7 +162,7 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     total.charge = 0;
                     total.vertex = 0;
 
-                    if (primaryLbImpactParam < newPrimaryLbImpactParameters) {
+                    if (muonHadronImpactParam < newMuonHadronImpactParameters) {
                         newMuons = dimuon;
                         newHadrons = dihadron;
                         newTotals = total;
