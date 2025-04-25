@@ -146,15 +146,15 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
 
                     double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
 
-                    // std::cout << "Found new potential pair.\n";
-                    // std::cout << "Coordinates are: " << primary.vertex.position << " primary, " << p.vertex.position << " muon, " << q.vertex.position << " hadron.\n";
-                    // std::cout << "Displacements are: (" << displacementTotal[0] << ", " << displacementTotal[1] << ", " << displacementTotal[2] << ") total, " <<
-                    //     "(" << dihadronDisplacement[0] << ", " << dihadronDisplacement[1] << ", " << dihadronDisplacement[2] << "), hadron.\n";
-                    // std::cout << "Displacement product is: " << displacementProduct << std::endl;
-                    // std::cout << "3-momenta are: (" << Lb3Momentum[0] << ", " << Lb3Momentum[1] << ", " << Lb3Momentum[2] << ") Lb, " <<
-                    //     "(" << dihadron3Momentum[0] << ", " << dihadron3Momentum[1] << ", " << dihadron3Momentum[2] << "), hadron.\n";
-                    // std::cout << "Computed impact parameters: " << primaryLbImpactParam << " total, " << muonHadronImpactParam << "muonHadron.\n";
-                    // std::cout << "Computed Lb mass: " << LbMomentum.Mag() << "\n";
+                    std::cout << "Found new potential pair.\n";
+                    std::cout << "Coordinates are: " << primary.vertex.position << " primary, " << p.vertex.position << " muon, " << q.vertex.position << " hadron.\n";
+                    std::cout << "Displacements are: (" << displacementTotal[0] << ", " << displacementTotal[1] << ", " << displacementTotal[2] << ") total, " <<
+                        "(" << dihadronDisplacement[0] << ", " << dihadronDisplacement[1] << ", " << dihadronDisplacement[2] << "), hadron.\n";
+                    std::cout << "Displacement product is: " << displacementProduct << std::endl;
+                    std::cout << "3-momenta are: (" << Lb3Momentum[0] << ", " << Lb3Momentum[1] << ", " << Lb3Momentum[2] << ") Lb, " <<
+                        "(" << dihadron3Momentum[0] << ", " << dihadron3Momentum[1] << ", " << dihadron3Momentum[2] << "), hadron.\n";
+                    std::cout << "Computed impact parameters: " << primaryLbImpactParam << " total, " << muonHadronImpactParam << "muonHadron.\n";
+                    std::cout << "Computed Lb mass: " << LbMomentum.Mag() << "\n";
 
                     FCCAnalysesComposite2 dihadron;
                     dihadron.vertex = counterQ;
@@ -166,7 +166,7 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     total.charge = 0;
                     total.vertex = 0;
 
-                    if (muonHadronImpactParam < newMuonHadronImpactParameters) {
+                    if (primaryLbImpactParam < newPrimaryLbImpactParameters) {
                         newMuons = dimuon;
                         newHadrons = dihadron;
                         newTotals = total;
