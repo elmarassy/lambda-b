@@ -88,6 +88,8 @@ namespace FCCAnalyses {
 
         };
 
+        testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                               ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
         testing testuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop);
         buildLb2LMuMu Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,

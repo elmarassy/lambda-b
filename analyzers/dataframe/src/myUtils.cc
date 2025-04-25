@@ -17,8 +17,6 @@ namespace FCCAnalyses {
 
 
 
-
-
 testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop) {
     testing result;
@@ -130,7 +128,6 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     double_t muonHadronImpactParam = (dihadronDisplacement - (
                                            dihadronDisplacement.Dot(dihadron3Momentum) / dihadron3Momentum.Dot(
                                                dihadron3Momentum)) * dihadron3Momentum).Mag();
-
                     TLorentzVector LbMomentum = dimuonMomentum + dihadronMomentum;
                     TVector3 Lb3Momentum = TVector3(LbMomentum.Px(), LbMomentum.Py(), LbMomentum.Pz());
                     TVector3 displacementTotal = TVector3(p.vertex.position[0] - primary.vertex.position[0],
