@@ -46,9 +46,6 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
     for (auto &v: vertex) {
         //find the primary vertex
         if (v.vertex.primary) {
-            if (count) {
-                std::cout << "Found multiple primary vertices (" << count + 1 << ").\n";
-            }
             primary = v;
             count++;
         }
@@ -90,25 +87,24 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     continue;
                 }
                 int chargeHadrons = 0;
-                int numP = 0;
-                int numPi = 0;
+                int numHadrons = 0;
                 for (auto &potentialHadron: q.reco_ind) {
-                    if (recop.at(potentialHadron).type == 2212) {
-                        numP += 1;
-                        chargeHadrons += recop.at(potentialHadron).charge;
-                    }
-                    if (recop.at(potentialHadron).type == 211) {
-                        numPi += 1;
-                        chargeHadrons += recop.at(potentialHadron).charge;
-                    }
-                    // if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
-                    //     numHadrons += 1;
+                    // if (recop.at(potentialHadron).type == 2212) {
+                    //     numP += 1;
                     //     chargeHadrons += recop.at(potentialHadron).charge;
                     // }
+                    // if (recop.at(potentialHadron).type == 211) {
+                    //     numPi += 1;
+                    //     chargeHadrons += recop.at(potentialHadron).charge;
+                    // }
+                    if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
+                        numHadrons += 1;
+                        chargeHadrons += recop.at(potentialHadron).charge;
+                    }
                 }
 
-                // if (numHadrons == 2 && chargeHadrons == 0) {
-                if (numP == 1 && numPi == 1 && chargeHadrons == 0) {
+                if (numHadrons == 2 && chargeHadrons == 0) {
+                // if (numP == 1 && numPi == 1 && chargeHadrons == 0) {
                     FCCAnalysesComposite2 hadron1;
                     hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
                     hadron1.charge = recop[q.reco_ind.at(0)].charge;
@@ -119,11 +115,11 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     hadron2.charge = recop[q.reco_ind.at(1)].charge;
                     int hadron2Type = recop[q.reco_ind.at(1)].type;
 
-                    if (hadron1.charge < 0) { //always have hadron1.charge > 0
-                        FCCAnalysesComposite2 tempHadron = hadron1;
-                        hadron1 = hadron2;
-                        hadron2 = tempHadron;
-                    }
+                    // if (hadron1.charge < 0) { //always have hadron1.charge > 0
+                    //     FCCAnalysesComposite2 tempHadron = hadron1;
+                    //     hadron1 = hadron2;
+                    //     hadron2 = tempHadron;
+                    // }
 
                     TLorentzVector dihadronMomentum = build_tlv(recop, q.reco_ind);
                     TVector3 dihadronDisplacement = TVector3(q.vertex.position[0] - p.vertex.position[0],
