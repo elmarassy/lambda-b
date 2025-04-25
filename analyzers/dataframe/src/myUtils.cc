@@ -87,24 +87,26 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                     continue;
                 }
                 int chargeHadrons = 0;
-                int numHadrons = 0;
+                // int numHadrons = 0;
+                int numP = 0;
+                int numPi = 0;
                 for (auto &potentialHadron: q.reco_ind) {
-                    // if (recop.at(potentialHadron).type == 2212) {
-                    //     numP += 1;
-                    //     chargeHadrons += recop.at(potentialHadron).charge;
-                    // }
-                    // if (recop.at(potentialHadron).type == 211) {
-                    //     numPi += 1;
-                    //     chargeHadrons += recop.at(potentialHadron).charge;
-                    // }
-                    if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
-                        numHadrons += 1;
+                    if (recop.at(potentialHadron).type == 2212) {
+                        numP += 1;
                         chargeHadrons += recop.at(potentialHadron).charge;
                     }
+                    if (recop.at(potentialHadron).type == 211) {
+                        numPi += 1;
+                        chargeHadrons += recop.at(potentialHadron).charge;
+                    }
+                    // if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
+                    //     numHadrons += 1;
+                    //     chargeHadrons += recop.at(potentialHadron).charge;
+                    // }
                 }
 
-                if (numHadrons == 2 && chargeHadrons == 0) {
-                // if (numP == 1 && numPi == 1 && chargeHadrons == 0) {
+                // if (numHadrons == 2 && chargeHadrons == 0) {
+                if (numP == 1 && numPi == 1 && chargeHadrons == 0) {
                     FCCAnalysesComposite2 hadron1;
                     hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
                     hadron1.charge = recop[q.reco_ind.at(0)].charge;
