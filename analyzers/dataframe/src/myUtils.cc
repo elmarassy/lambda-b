@@ -325,6 +325,8 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
 
             buildLb2LMuMu result;
 
+            double initial = 1e9;
+
             ROOT::VecOps::RVec<FCCAnalysesComposite2> dimuons; //dimuon momentum
             ROOT::VecOps::RVec<FCCAnalysesComposite2> muons1; //muon1 momentum
             ROOT::VecOps::RVec<FCCAnalysesComposite2> muons2; //muon2 momentum
@@ -353,9 +355,6 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
             for (auto &v: vertex) {
                 //find the primary vertex
                 if (v.vertex.primary) {
-                    if (count) {
-                        std::cout << "Found multiple primary vertices (" << count + 1 << ").\n";
-                    }
                     primary = v;
                     count++;
                 }
@@ -398,11 +397,12 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                         }
                         int chargeHadrons = 0;
                         int numHadrons = 0;
-
+                        int storedType = -1;
                         for (auto &potentialHadron: q.reco_ind) {
-                            if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
+                            if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11 && recop.at(potentialHadron).type != storedType) {
                                 numHadrons += 1;
                                 chargeHadrons += recop.at(potentialHadron).charge;
+                                storedType = recop.at(potentialHadron).type;
                             }
                         }
 
@@ -447,15 +447,15 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
 
                             double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
 
-                            std::cout << "Found new potential pair.\n";
-                            std::cout << "Coordinates are: " << primary.vertex.position << " primary, " << p.vertex.position << " muon, " << q.vertex.position << " hadron.\n";
-                            std::cout << "Displacements are: (" << displacementTotal[0] << ", " << displacementTotal[1] << ", " << displacementTotal[2] << ") total, " <<
-                                "(" << dihadronDisplacement[0] << ", " << dihadronDisplacement[1] << ", " << dihadronDisplacement[2] << "), hadron.\n";
-                            std::cout << "Displacement product is: " << displacementProduct << std::endl;
-                            std::cout << "3-momenta are: (" << Lb3Momentum[0] << ", " << Lb3Momentum[1] << ", " << Lb3Momentum[2] << ") Lb, " <<
-                                "(" << dihadron3Momentum[0] << ", " << dihadron3Momentum[1] << ", " << dihadron3Momentum[2] << "), hadron.\n";
-                            std::cout << "Computed impact parameters: " << primaryLbImpactParam << " total, " << muonHadronImpactParam << "muonHadron.\n";
-                            std::cout << "Computed Lb mass: " << LbMomentum.Mag() << "\n";
+                            // std::cout << "Found new potential pair.\n";
+                            // std::cout << "Coordinates are: " << primary.vertex.position << " primary, " << p.vertex.position << " muon, " << q.vertex.position << " hadron.\n";
+                            // std::cout << "Displacements are: (" << displacementTotal[0] << ", " << displacementTotal[1] << ", " << displacementTotal[2] << ") total, " <<
+                            //     "(" << dihadronDisplacement[0] << ", " << dihadronDisplacement[1] << ", " << dihadronDisplacement[2] << "), hadron.\n";
+                            // std::cout << "Displacement product is: " << displacementProduct << std::endl;
+                            // std::cout << "3-momenta are: (" << Lb3Momentum[0] << ", " << Lb3Momentum[1] << ", " << Lb3Momentum[2] << ") Lb, " <<
+                            //     "(" << dihadron3Momentum[0] << ", " << dihadron3Momentum[1] << ", " << dihadron3Momentum[2] << "), hadron.\n";
+                            // std::cout << "Computed impact parameters: " << primaryLbImpactParam << " total, " << muonHadronImpactParam << "muonHadron.\n";
+                            // std::cout << "Computed Lb mass: " << LbMomentum.Mag() << "\n";
 
                             FCCAnalysesComposite2 dihadron;
                             dihadron.vertex = counterQ;
@@ -467,25 +467,43 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                             total.charge = 0;
                             total.vertex = 0;
 
-                            dimuons.push_back(dimuon);
-                            muons1.push_back(muon1);
-                            muons2.push_back(muon2);
+                            if (primaryLbImpactParam < initial) {
+                                dimuons.clear();
+                                muons1.clear();
+                                muons2.clear();
+                                dihadrons.clear();
+                                hadrons1.clear();
+                                hadrons2.clear();
+                                totals.clear();
+                                flightDistancesLb.clear();
+                                flightDistancesL.clear();
+                                primaryLbImpactParams.clear();
+                                muonHadronImpactParams.clear();
+                                displacementProducts.clear();
+                                hadron1Types.clear();
+                                hadron2Types.clear();
 
-                            dihadrons.push_back(dihadron);
-                            hadrons1.push_back(hadron1);
-                            hadrons2.push_back(hadron2);
+                                dimuons.push_back(dimuon);
+                                muons1.push_back(muon1);
+                                muons2.push_back(muon2);
 
-                            totals.push_back(total);
+                                dihadrons.push_back(dihadron);
+                                hadrons1.push_back(hadron1);
+                                hadrons2.push_back(hadron2);
 
-                            flightDistancesL.push_back(flightDistanceL);
-                            flightDistancesLb.push_back(flightDistanceLb);
+                                totals.push_back(total);
 
-                            primaryLbImpactParams.push_back(primaryLbImpactParam);
-                            muonHadronImpactParams.push_back(muonHadronImpactParam);
-                            displacementProducts.push_back(displacementProduct);
+                                flightDistancesL.push_back(flightDistanceL);
+                                flightDistancesLb.push_back(flightDistanceLb);
 
-                            hadron1Types.push_back(hadron1Type);
-                            hadron2Types.push_back(hadron2Type);
+                                primaryLbImpactParams.push_back(primaryLbImpactParam);
+                                muonHadronImpactParams.push_back(muonHadronImpactParam);
+                                displacementProducts.push_back(displacementProduct);
+
+                                hadron1Types.push_back(hadron1Type);
+                                hadron2Types.push_back(hadron2Type);
+                                initial = primaryLbImpactParam;
+                            }
                         }
                         counterQ += 1;
                     }
