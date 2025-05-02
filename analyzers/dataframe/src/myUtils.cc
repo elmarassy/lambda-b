@@ -349,6 +349,11 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
             ROOT::VecOps::RVec<int> hadron2Types;
             //currently storing type of hadrons to use for debugging, will not be needed later
 
+
+            const double_t pionMass = 0.139570392;
+            const double_t protonMass = 0.938272089;
+            const double_t lambdaMass = 1.115683;
+
             std::cout << "Running...\n";
             VertexingUtils::FCCAnalysesVertex primary;
             int count = 0;
@@ -395,41 +400,60 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                             counterQ += 1;
                             continue;
                         }
-                        int chargeHadrons = 0;
+                        int chargeHadron1 = recop.at(q.reco_ind.at(0)).charge;
+                        int chargeHadron2 = recop.at(q.reco_ind.at(1)).charge;
                         int numHadrons = 0;
-                        int storedType = -1;
                         for (auto &potentialHadron: q.reco_ind) {
-                            if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11 && recop.at(potentialHadron).type != storedType) {
+                            if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
                                 numHadrons += 1;
-                                chargeHadrons += recop.at(potentialHadron).charge;
-                                storedType = recop.at(potentialHadron).type;
                             }
                         }
-
-                        if (numHadrons == 2 && chargeHadrons == 0) {
+                        if (chargeHadron1 != 0 && chargeHadron1 + chargeHadron2 == 0 && numHadrons == 2) {
                             FCCAnalysesComposite2 hadron1;
                             hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
                             hadron1.charge = recop[q.reco_ind.at(0)].charge;
-                            int hadron1Type = recop[q.reco_ind.at(0)].type;
+                            int hadron1Type;
 
                             FCCAnalysesComposite2 hadron2;
                             hadron2.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
                             hadron2.charge = recop[q.reco_ind.at(1)].charge;
-                            int hadron2Type = recop[q.reco_ind.at(1)].type;
+                            int hadron2Type;
 
-                            if (hadron1.charge < 0) { //always have hadron1.charge > 0
-                                FCCAnalysesComposite2 tempHadron = hadron1;
-                                hadron1 = hadron2;
-                                hadron2 = tempHadron;
+                            TLorentzVector tryPion1 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            TLorentzVector tryPion2 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+
+                            tryPion1.SetE(std::sqrt(pionMass * pionMass + tryPion1.Vect().Dot(tryPion1.Vect())));
+                            tryPion2.SetE(std::sqrt(pionMass * pionMass + tryPion2.Vect().Dot(tryPion2.Vect())));
+                            double_t norm = (tryPion1 + tryPion2).Mag();
+                            if (norm >= 0.49 && norm <= 0.505) {
+                                counterQ += 1;
+                                continue;
                             }
 
-                            TLorentzVector dihadronMomentum = build_tlv(recop, q.reco_ind);
+                            TLorentzVector tryProton1 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            TLorentzVector tryProton2 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+
+                            tryPion1.SetE(std::sqrt(protonMass * protonMass + tryPion1.Vect().Dot(tryPion1.Vect())));
+                            tryPion2.SetE(std::sqrt(protonMass * protonMass + tryPion2.Vect().Dot(tryPion2.Vect())));
+                            double_t normProtonPion = (tryProton1 + tryPion2).Mag();
+                            double_t normPionProton = (tryPion1 + tryProton2).Mag();
+                            if (std::abs(normProtonPion - lambdaMass) < std::abs(normPionProton - lambdaMass)) {
+                                hadron1.particle = tryProton1;
+                                hadron2.particle = tryPion2;
+                                hadron1Type = 2212;
+                                hadron2Type = 211;
+                            } else {
+                                hadron1.particle = tryPion1;
+                                hadron2.particle = tryProton2;
+                                hadron1Type = 211;
+                                hadron2Type = 2212;
+                            }
+                            TLorentzVector dihadronMomentum = hadron1.particle + hadron2.particle;
                             TVector3 dihadronDisplacement = TVector3(q.vertex.position[0] - p.vertex.position[0],
                                                                      q.vertex.position[1] - p.vertex.position[1],
                                                                      q.vertex.position[2] - p.vertex.position[2]);
 
-                            TVector3 dihadron3Momentum = TVector3(dihadronMomentum.Px(), dihadronMomentum.Py(),
-                                                                  dihadronMomentum.Pz());
+                            TVector3 dihadron3Momentum = dihadronMomentum.Vect();
 
                             double_t flightDistanceL = dihadronDisplacement.Mag();
                             double_t muonHadronImpactParam = (dihadronDisplacement - (
@@ -437,25 +461,14 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                                                        dihadron3Momentum)) * dihadron3Momentum).Mag();
 
                             TLorentzVector LbMomentum = dimuonMomentum + dihadronMomentum;
-                            TVector3 Lb3Momentum = TVector3(LbMomentum.Px(), LbMomentum.Py(), LbMomentum.Pz());
+                            TVector3 Lb3Momentum = LbMomentum.Vect();
                             TVector3 displacementTotal = TVector3(p.vertex.position[0] - primary.vertex.position[0],
                                                                   p.vertex.position[1] - primary.vertex.position[1],
                                                                   p.vertex.position[2] - primary.vertex.position[2]);
 
                             double_t flightDistanceLb = displacementTotal.Mag();
                             double_t primaryLbImpactParam = (displacementTotal - (displacementTotal.Dot(Lb3Momentum) / Lb3Momentum.Dot(Lb3Momentum)) * Lb3Momentum).Mag();
-
                             double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
-
-                            // std::cout << "Found new potential pair.\n";
-                            // std::cout << "Coordinates are: " << primary.vertex.position << " primary, " << p.vertex.position << " muon, " << q.vertex.position << " hadron.\n";
-                            // std::cout << "Displacements are: (" << displacementTotal[0] << ", " << displacementTotal[1] << ", " << displacementTotal[2] << ") total, " <<
-                            //     "(" << dihadronDisplacement[0] << ", " << dihadronDisplacement[1] << ", " << dihadronDisplacement[2] << "), hadron.\n";
-                            // std::cout << "Displacement product is: " << displacementProduct << std::endl;
-                            // std::cout << "3-momenta are: (" << Lb3Momentum[0] << ", " << Lb3Momentum[1] << ", " << Lb3Momentum[2] << ") Lb, " <<
-                            //     "(" << dihadron3Momentum[0] << ", " << dihadron3Momentum[1] << ", " << dihadron3Momentum[2] << "), hadron.\n";
-                            // std::cout << "Computed impact parameters: " << primaryLbImpactParam << " total, " << muonHadronImpactParam << "muonHadron.\n";
-                            // std::cout << "Computed Lb mass: " << LbMomentum.Mag() << "\n";
 
                             FCCAnalysesComposite2 dihadron;
                             dihadron.vertex = counterQ;
@@ -490,7 +503,6 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                                 dihadrons.push_back(dihadron);
                                 hadrons1.push_back(hadron1);
                                 hadrons2.push_back(hadron2);
-
                                 totals.push_back(total);
 
                                 flightDistancesL.push_back(flightDistanceL);
