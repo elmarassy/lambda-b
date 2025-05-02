@@ -1,8 +1,8 @@
 #Mandatory: List of processes
 processList = {
     # 'p8_ee_Zbb_ecm91_EvtGen_Bd2MuMu':{},
-    # 'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMu':{'fraction':0.05}
-    'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMuphsp':{'fraction':1/23}
+    'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMu':{'fraction':0.05}
+    # 'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMuphsp':{'fraction':1/23}
     # 'p8_ee_Zss_ecm91':{'fraction':1/4388}
 }
 
