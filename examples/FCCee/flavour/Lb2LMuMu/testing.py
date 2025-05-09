@@ -22,7 +22,7 @@ ROOT::VecOps::RVec<FCCAnalysesComposite2> oldHadrons;
 processList = {
     # 'p8_ee_Zbb_ecm91_EvtGen_Bd2MuMu':{},
     # 'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMu':{'fraction':0.05}
-    'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMuphsp':{'fraction':1/23}
+    'p8_ee_Zbb_ecm91_EvtGen_Lb2LMuMuphsp':{'fraction':1/230}
     # 'p8_ee_Zss_ecm91':{'fraction':1/4388}
 }
 
@@ -90,8 +90,8 @@ class RDFanalysis():
                .Define("Lb2LMuMu",          "FCCAnalyses::myUtils::test2Lb2LMuMu(VertexObject, RecoPartPIDAtVertex)")
 
                .Define("newLb",                "Lb2LMuMu.newTotals")
-               .Define("newDimuons",           "Lb2LMuMu.newMuons")
-               .Define("newDihadrons",         "Lb2LMuMu.newHadrons")
+               .Define("newDimuons",           "Lb2LMuMu.newDimuons")
+               .Define("newDihadrons",         "Lb2LMuMu.newDihadrons")
 
                .Define("newLb_mass",           "FCCAnalyses::myUtils::getFCCAnalysesComposite_mass(newLb)")
                .Define("newLb_p",              "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(newLb, -1)")
@@ -124,8 +124,8 @@ class RDFanalysis():
                .Define("newDisplacementProducts",              "Lb2LMuMu.newDisplacementProduct")
 
                .Define("oldLb",                "Lb2LMuMu.oldTotals")
-               .Define("oldDimuons",           "Lb2LMuMu.oldMuons")
-               .Define("oldDihadrons",         "Lb2LMuMu.oldHadrons")
+               .Define("oldDimuons",           "Lb2LMuMu.oldDimuons")
+               .Define("oldDihadrons",         "Lb2LMuMu.oldDihadrons")
 
                .Define("oldLb_mass",           "FCCAnalyses::myUtils::getFCCAnalysesComposite_mass(oldLb)")
                .Define("oldLb_p",              "FCCAnalyses::myUtils::getFCCAnalysesComposite_p(oldLb, -1)")
