@@ -318,7 +318,385 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
             }
 
             return result;
+}
+
+
+
+        testing2 test2Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
+                                       ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop) {
+
+            testing2 result;
+
+            double initial = 1e9;
+
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newDimuons; //dimuon momentum
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newMuons1; //muon1 momentum
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newMuons2; //muon2 momentum
+
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newDihadrons; //dihadron momentum
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newHadrons1; //hadron1 momentum
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newHadrons2; //hadron2 momentum
+
+            ROOT::VecOps::RVec<FCCAnalysesComposite2> newTotals;
+            //total momentum (dimuon + dihadron = lambdaB for valid selection)
+
+            ROOT::VecOps::RVec<double_t> newFlightDistancesLb; //distance from dimuon vertex to primary vertex
+            ROOT::VecOps::RVec<double_t> newFlightDistancesL; //distance from dihadron vertex to dimuon vertex
+
+            ROOT::VecOps::RVec<double_t> newPrimaryLbImpactParams; //minimal distance between reconstructed lambdaB path and primary vertex
+            ROOT::VecOps::RVec<double_t> newMuonHadronImpactParams; //minimal distance between dihadron path and dimuon vertex
+            ROOT::VecOps::RVec<double_t> newDisplacementProducts;
+
+            ROOT::VecOps::RVec<int> newHadron1Types;
+            ROOT::VecOps::RVec<int> newHadron2Types;
+            //currently storing type of hadrons to use for debugging, will not be needed later
+
+
+            const double_t pionMass = 0.139570392;
+            const double_t protonMass = 0.938272089;
+            const double_t lambdaMass = 1.115683;
+
+            std::cout << "Running...\n";
+            VertexingUtils::FCCAnalysesVertex primary;
+            int count = 0;
+            for (auto &v: vertex) {
+                //find the primary vertex
+                if (v.vertex.primary) {
+                    primary = v;
+                    count++;
+                }
+            }
+            int counterP = 0;
+            for (auto &p: vertex) {
+                if (p.vertex.primary || p.ntracks != 2) {
+                    counterP += 1;
+                    continue;
+                }
+                int chargeMuons = 0;
+                int numMuons = 0;
+                for (auto &potentialMuon: p.reco_ind) {
+                    if (recop.at(potentialMuon).type == 13) {
+                        numMuons += 1;
+                        chargeMuons += recop.at(potentialMuon).charge;
+                    }
+                }
+                if (chargeMuons == 0 && numMuons == 2) {
+                    TLorentzVector dimuonMomentum = build_tlv(recop, p.reco_ind);
+
+                    FCCAnalysesComposite2 muon1;
+                    muon1.particle = ReconstructedParticle::get_tlv(recop[p.reco_ind.at(0)]);
+                    muon1.charge = recop[p.reco_ind.at(0)].charge;
+
+                    FCCAnalysesComposite2 muon2;
+                    muon2.particle = ReconstructedParticle::get_tlv(recop[p.reco_ind.at(1)]);
+                    muon2.charge = recop[p.reco_ind.at(1)].charge;
+
+                    FCCAnalysesComposite2 dimuon;
+                    dimuon.vertex = counterP;
+                    dimuon.particle = dimuonMomentum;
+                    dimuon.charge = 0;
+
+                    int counterQ = 0;
+                    for (auto &q: vertex) {
+                        if (q.vertex.primary || q.ntracks != 2) {
+                            counterQ += 1;
+                            continue;
+                        }
+                        int chargeHadron1 = recop.at(q.reco_ind.at(0)).charge;
+                        int chargeHadron2 = recop.at(q.reco_ind.at(1)).charge;
+                        int numHadrons = 0;
+                        for (auto &potentialHadron: q.reco_ind) {
+                            if (recop.at(potentialHadron).type != 13 && recop.at(potentialHadron).type != 11) {
+                                numHadrons += 1;
+                            }
+                        }
+                        if (chargeHadron1 != 0 && chargeHadron1 + chargeHadron2 == 0 && numHadrons == 2) {
+                            FCCAnalysesComposite2 hadron1;
+                            hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            hadron1.charge = recop[q.reco_ind.at(0)].charge;
+                            int hadron1Type;
+
+                            FCCAnalysesComposite2 hadron2;
+                            hadron2.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+                            hadron2.charge = recop[q.reco_ind.at(1)].charge;
+                            int hadron2Type;
+
+                            TLorentzVector tryPion1 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            TLorentzVector tryPion2 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+
+                            tryPion1.SetE(std::sqrt(pionMass * pionMass + tryPion1.Vect().Dot(tryPion1.Vect())));
+                            tryPion2.SetE(std::sqrt(pionMass * pionMass + tryPion2.Vect().Dot(tryPion2.Vect())));
+                            double_t norm = (tryPion1 + tryPion2).Mag();
+                            if (norm >= 0.49 && norm <= 0.505) {
+                                counterQ += 1;
+                                continue;
+                            }
+
+                            TLorentzVector tryProton1 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            TLorentzVector tryProton2 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+
+                            tryPion1.SetE(std::sqrt(protonMass * protonMass + tryPion1.Vect().Dot(tryPion1.Vect())));
+                            tryPion2.SetE(std::sqrt(protonMass * protonMass + tryPion2.Vect().Dot(tryPion2.Vect())));
+                            double_t normProtonPion = (tryProton1 + tryPion2).Mag();
+                            double_t normPionProton = (tryPion1 + tryProton2).Mag();
+                            if (std::abs(normProtonPion - lambdaMass) < std::abs(normPionProton - lambdaMass)) {
+                                hadron1.particle = tryProton1;
+                                hadron2.particle = tryPion2;
+                                hadron1Type = 2212;
+                                hadron2Type = 211;
+                            } else {
+                                hadron1.particle = tryPion1;
+                                hadron2.particle = tryProton2;
+                                hadron1Type = 211;
+                                hadron2Type = 2212;
+                            }
+                            TLorentzVector dihadronMomentum = hadron1.particle + hadron2.particle;
+                            TVector3 dihadronDisplacement = TVector3(q.vertex.position[0] - p.vertex.position[0],
+                                                                     q.vertex.position[1] - p.vertex.position[1],
+                                                                     q.vertex.position[2] - p.vertex.position[2]);
+
+                            TVector3 dihadron3Momentum = dihadronMomentum.Vect();
+
+                            double_t flightDistanceL = dihadronDisplacement.Mag();
+                            double_t muonHadronImpactParam = (dihadronDisplacement - (
+                                                   dihadronDisplacement.Dot(dihadron3Momentum) / dihadron3Momentum.Dot(
+                                                       dihadron3Momentum)) * dihadron3Momentum).Mag();
+
+                            TLorentzVector LbMomentum = dimuonMomentum + dihadronMomentum;
+                            TVector3 Lb3Momentum = LbMomentum.Vect();
+                            TVector3 displacementTotal = TVector3(p.vertex.position[0] - primary.vertex.position[0],
+                                                                  p.vertex.position[1] - primary.vertex.position[1],
+                                                                  p.vertex.position[2] - primary.vertex.position[2]);
+
+                            double_t flightDistanceLb = displacementTotal.Mag();
+                            double_t primaryLbImpactParam = (displacementTotal - (displacementTotal.Dot(Lb3Momentum) / Lb3Momentum.Dot(Lb3Momentum)) * Lb3Momentum).Mag();
+                            double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
+
+                            FCCAnalysesComposite2 dihadron;
+                            dihadron.vertex = counterQ;
+                            dihadron.particle = dihadronMomentum;
+                            dihadron.charge = 0;
+
+                            FCCAnalysesComposite2 total;
+                            total.particle = LbMomentum;
+                            total.charge = 0;
+                            total.vertex = 0;
+
+                            if (primaryLbImpactParam < initial) {
+                                newDimuons.clear();
+                                newMuons1.clear();
+                                newMuons2.clear();
+                                newDihadrons.clear();
+                                newHadrons1.clear();
+                                newHadrons2.clear();
+                                newTotals.clear();
+                                newFlightDistancesLb.clear();
+                                newFlightDistancesL.clear();
+                                newPrimaryLbImpactParams.clear();
+                                newMuonHadronImpactParams.clear();
+                                newDisplacementProducts.clear();
+                                newHadron1Types.clear();
+                                newHadron2Types.clear();
+
+                                newDimuons.push_back(dimuon);
+                                newMuons1.push_back(muon1);
+                                newMuons2.push_back(muon2);
+
+                                newDihadrons.push_back(dihadron);
+                                newHadrons1.push_back(hadron1);
+                                newHadrons2.push_back(hadron2);
+                                newTotals.push_back(total);
+
+                                newFlightDistancesL.push_back(flightDistanceL);
+                                newFlightDistancesLb.push_back(flightDistanceLb);
+
+                                newPrimaryLbImpactParams.push_back(primaryLbImpactParam);
+                                newMuonHadronImpactParams.push_back(muonHadronImpactParam);
+                                newDisplacementProducts.push_back(displacementProduct);
+
+                                newHadron1Types.push_back(hadron1Type);
+                                newHadron2Types.push_back(hadron2Type);
+                                initial = primaryLbImpactParam;
+                            }
+                        }
+                        counterQ += 1;
+                    }
+                }
+                counterP += 1;
+            }
+            if (initial == 1e9) return result;
+
+            FCCAnalysesComposite2 compL;
+            FCCAnalysesComposite2 compMu;
+            FCCAnalysesComposite2 savedL;
+            FCCAnalysesComposite2 savedMu;
+
+            //   ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData>
+            // SelPrimaryTracks(ROOT::VecOps::RVec<int> recind, ROOT::VecOps::RVec<int> mcind,
+            //                  ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> reco,
+            //                  ROOT::VecOps::RVec<edm4hep::MCParticleData> mc,
+            //                  TVector3 MC_EventPrimaryVertex)
+            int counterL = 0;
+            int pcount = 0;
+            double max = 0;
+            bool valid = false;
+            for (auto &p: vertex) {
+                if (p.vertex.primary) {
+                    counterL += 1;
+                    continue;
+                }
+                if (p.ntracks != 2) {
+                    counterL += 1;
+                    continue;
+                }
+                int charge_p = 0;
+                int nobj_p = 0;
+                for (auto &r: p.reco_ind) {
+                    if (recop.at(r).type == 2212) {
+                        nobj_p += 1;
+                        charge_p += recop.at(r).charge;
+                    }
+                }
+                int charge_pi = 0;
+                int nobj_pi = 0;
+                for (auto &r: p.reco_ind) {
+                    if (recop.at(r).type == 211) {
+                        nobj_pi += 1;
+                        charge_pi += recop.at(r).charge;
+                    }
+                }
+                if (nobj_pi == 1 && nobj_p == 1 && charge_pi + charge_p == 0) {
+                    compL.vertex = counterL;
+                    compL.particle = build_tlv(recop, p.reco_ind);
+                    compL.charge = charge_pi + charge_p;
+                    pcount += 1;
+                    int counterMu = 0;
+                    for (auto &q: vertex) {
+                        if (q.vertex.primary) {
+                            counterMu += 1;
+                            continue;
+                        }
+                        if (q.ntracks != 2) {
+                            counterMu += 1;
+                            continue;
+                        }
+                        int charge_mumu = 0;
+                        int nobj_mumu = 0;
+                        for (auto &s: q.reco_ind) {
+                            if (recop.at(s).type == 13) {
+                                nobj_mumu += 1;
+                                charge_mumu += recop.at(s).charge;
+                            }
+                        }
+                        if (nobj_mumu == 2 && charge_mumu == 0) {
+                            compMu.vertex = counterMu;
+                            compMu.particle = build_tlv(recop, q.reco_ind);
+                            compMu.charge = charge_pi + charge_p;
+
+                            double alignment = compMu.particle[0] * compL.particle[0] + compMu.particle[1] * compL.
+                                               particle[1] + compMu.particle[2] * compL.particle[2];
+                            if (alignment > max) {
+                                max = alignment;
+                                savedL = compL;
+                                savedMu = compMu;
+                                valid = true;
+                            }
+                        }
+                        counterMu += 1;
+                    }
+                }
+                counterL += 1;
+            }
+
+            if (valid) {
+                TLorentzVector dimuonMomentum = savedMu.particle;
+                TLorentzVector dihadronMomentum = savedL.particle;
+                TVector3 dihadronDisplacement = TVector3(vertex.at(savedL.vertex).vertex.position[0] - vertex.at(savedMu.vertex).vertex.position[0],
+                                                         vertex.at(savedL.vertex).vertex.position[1] - vertex.at(savedMu.vertex).vertex.position[1],
+                                                         vertex.at(savedL.vertex).vertex.position[2] - vertex.at(savedMu.vertex).vertex.position[2]);
+
+                TVector3 dihadron3Momentum = TVector3(dihadronMomentum.Px(), dihadronMomentum.Py(),
+                                                      dihadronMomentum.Pz());
+
+                double_t flightDistanceL = dihadronDisplacement.Mag();
+                double_t muonHadronImpactParam = (dihadronDisplacement - (
+                                       dihadronDisplacement.Dot(dihadron3Momentum) / dihadron3Momentum.Dot(
+                                           dihadron3Momentum)) * dihadron3Momentum).Mag();
+
+                TLorentzVector LbMomentum = dimuonMomentum + dihadronMomentum;
+                TVector3 Lb3Momentum = TVector3(LbMomentum.Px(), LbMomentum.Py(), LbMomentum.Pz());
+                TVector3 displacementTotal = TVector3(primary.vertex.position[0] - vertex.at(savedMu.vertex).vertex.position[0],
+                                                 primary.vertex.position[1] - vertex.at(savedMu.vertex).vertex.position[1],
+                                                 primary.vertex.position[2] - vertex.at(savedMu.vertex).vertex.position[2]);
+
+                double_t flightDistanceLb = displacementTotal.Mag();
+                double_t primaryLbImpactParam = (displacementTotal - (displacementTotal.Dot(Lb3Momentum) / Lb3Momentum.Dot(Lb3Momentum)) * Lb3Momentum).Mag();
+
+                double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
+
+                FCCAnalysesComposite2 total;
+                total.particle = LbMomentum;
+                total.charge = 0;
+                total.vertex = 0;
+
+                result.newDimuons = newDimuons;
+                result.newMuons1 = newMuons1;
+                result.newMuons2 = newMuons2;
+
+                result.newDihadrons = newDihadrons;
+                result.newHadrons1 = newHadrons1;
+                result.newHadrons2 = newHadrons2;
+
+                result.newTotals = newTotals;
+
+                result.newFlightDistancesLb = newFlightDistancesLb;
+                result.newFlightDistancesL = newFlightDistancesL;
+
+                result.newPrimaryLbImpactParameters = newPrimaryLbImpactParams;
+                result.newMuonHadronImpactParameters = newMuonHadronImpactParams;
+                result.newDisplacementProduct = newDisplacementProducts;
+
+                result.newHadron1Types = newHadron1Types;
+                result.newHadron2Types = newHadron2Types;
+
+                result.oldDihadrons.push_back(savedL);
+                FCCAnalysesComposite2 hadron1;
+                hadron1.particle = ReconstructedParticle::get_tlv(recop[vertex.at(savedL.vertex).reco_ind.at(0)]);
+                hadron1.charge = recop[vertex.at(savedL.vertex).reco_ind.at(0)].charge;
+                int hadron1Type = recop[vertex.at(savedL.vertex).reco_ind.at(0)].type;
+                FCCAnalysesComposite2 hadron2;
+                hadron2.particle = ReconstructedParticle::get_tlv(recop[vertex.at(savedL.vertex).reco_ind.at(1)]);
+                hadron2.charge = recop[vertex.at(savedL.vertex).reco_ind.at(1)].charge;
+                int hadron2Type = recop[vertex.at(savedL.vertex).reco_ind.at(1)].type;
+                result.oldHadrons1.push_back(hadron1);
+                result.oldHadrons2.push_back(hadron2);
+                result.oldHadron1Types.push_back(hadron1Type);
+                result.oldHadron2Types.push_back(hadron2Type);
+
+                result.oldDimuons.push_back(savedMu);
+                FCCAnalysesComposite2 muon1;
+                muon1.particle = ReconstructedParticle::get_tlv(recop[vertex.at(savedMu.vertex).reco_ind.at(0)]);
+                muon1.charge = recop[vertex.at(savedMu.vertex).reco_ind.at(0)].charge;
+                FCCAnalysesComposite2 muon2;
+                muon2.particle = ReconstructedParticle::get_tlv(recop[vertex.at(savedMu.vertex).reco_ind.at(1)]);
+                muon2.charge = recop[vertex.at(savedMu.vertex).reco_ind.at(1)].charge;
+                result.oldMuons1.push_back(muon1);
+                result.oldMuons2.push_back(muon2);
+
+                result.oldPrimaryLbImpactParameters.push_back(primaryLbImpactParam);
+                result.oldTotals.push_back(total);
+                result.oldMuonHadronImpactParameters.push_back(muonHadronImpactParam);
+                result.oldDisplacementProduct.push_back(displacementProduct);
+                result.oldFlightDistancesL.push_back(flightDistanceL);
+                result.oldFlightDistancesLb.push_back(flightDistanceLb);
+            }
+
+            return result;
+
+
         }
+
+
 
         buildLb2LMuMu Lb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> vertex,
                                ROOT::VecOps::RVec<edm4hep::ReconstructedParticleData> recop) {

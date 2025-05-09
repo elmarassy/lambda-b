@@ -87,7 +87,7 @@ class RDFanalysis():
                #############################################
                ##        Build Lb -> LMuMu candidates      ##
                #############################################
-               .Define("Lb2LMuMu",          "FCCAnalyses::myUtils::testLb2LMuMu(VertexObject, RecoPartPIDAtVertex)")
+               .Define("Lb2LMuMu",          "FCCAnalyses::myUtils::test2Lb2LMuMu(VertexObject, RecoPartPIDAtVertex)")
 
                .Define("newLb",                "Lb2LMuMu.newTotals")
                .Define("newDimuons",           "Lb2LMuMu.newMuons")
@@ -116,8 +116,8 @@ class RDFanalysis():
                .Define("newH1_type",           "Lb2LMuMu.newHadron1Types")
                .Define("newH2_type",           "Lb2LMuMu.newHadron2Types")
 
-               .Define("newFlightDistancesLb",           "Lb2LMuMu.newFlightDistanceLb")
-               .Define("newFlightDistancesL",           "Lb2LMuMu.newFlightDistanceL")
+               .Define("newFlightDistancesLb",           "Lb2LMuMu.newFlightDistancesLb")
+               .Define("newFlightDistancesL",           "Lb2LMuMu.newFlightDistancesL")
 
                .Define("newPrimaryLbImpactParams",           "Lb2LMuMu.newPrimaryLbImpactParameters")
                .Define("newMuonHadronImpactParams",           "Lb2LMuMu.newMuonHadronImpactParameters")
@@ -150,8 +150,8 @@ class RDFanalysis():
                .Define("oldH1_type",           "Lb2LMuMu.oldHadron1Types")
                .Define("oldH2_type",           "Lb2LMuMu.oldHadron2Types")
 
-               .Define("oldFlightDistancesLb",           "Lb2LMuMu.oldFlightDistanceLb")
-               .Define("oldFlightDistancesL",           "Lb2LMuMu.oldFlightDistanceL")
+               .Define("oldFlightDistancesLb",           "Lb2LMuMu.oldFlightDistancesLb")
+               .Define("oldFlightDistancesL",           "Lb2LMuMu.oldFlightDistancesL")
 
                .Define("oldPrimaryLbImpactParams",           "Lb2LMuMu.oldPrimaryLbImpactParameters")
                .Define("oldMuonHadronImpactParams",           "Lb2LMuMu.oldMuonHadronImpactParameters")
