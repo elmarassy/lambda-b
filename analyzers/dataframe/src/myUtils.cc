@@ -412,12 +412,12 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                         }
                         if (chargeHadron1 != 0 && chargeHadron1 + chargeHadron2 == 0 && numHadrons == 2) {
                             FCCAnalysesComposite2 hadron1;
-                            hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
+                            // hadron1.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
                             hadron1.charge = recop[q.reco_ind.at(0)].charge;
                             int hadron1Type;
 
                             FCCAnalysesComposite2 hadron2;
-                            hadron2.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
+                            // hadron2.particle = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
                             hadron2.charge = recop[q.reco_ind.at(1)].charge;
                             int hadron2Type;
 
@@ -435,8 +435,8 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                             TLorentzVector tryProton1 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(0)]);
                             TLorentzVector tryProton2 = ReconstructedParticle::get_tlv(recop[q.reco_ind.at(1)]);
 
-                            tryPion1.SetE(std::sqrt(protonMass * protonMass + tryPion1.Vect().Dot(tryPion1.Vect())));
-                            tryPion2.SetE(std::sqrt(protonMass * protonMass + tryPion2.Vect().Dot(tryPion2.Vect())));
+                            tryProton1.SetE(std::sqrt(protonMass * protonMass + tryProton1.Vect().Dot(tryProton1.Vect())));
+                            tryProton2.SetE(std::sqrt(protonMass * protonMass + tryProton2.Vect().Dot(tryProton2.Vect())));
                             double_t normProtonPion = (tryProton1 + tryPion2).Mag();
                             double_t normPionProton = (tryPion1 + tryProton2).Mag();
                             if (std::abs(normProtonPion - lambdaMass) < std::abs(normPionProton - lambdaMass)) {
@@ -473,14 +473,14 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                             double_t displacementProduct = displacementTotal.Dot(dihadronDisplacement);
 
                             FCCAnalysesComposite2 dihadron;
-                            dihadron.vertex = counterQ;
+                            // dihadron.vertex = counterQ;
                             dihadron.particle = dihadronMomentum;
                             dihadron.charge = 0;
 
                             FCCAnalysesComposite2 total;
                             total.particle = LbMomentum;
                             total.charge = 0;
-                            total.vertex = 0;
+                            // total.vertex = 0;
 
                             if (primaryLbImpactParam < initial) {
                                 newDimuons.clear();
