@@ -450,6 +450,11 @@ testing testLb2LMuMu(ROOT::VecOps::RVec<VertexingUtils::FCCAnalysesVertex> verte
                                 hadron1Type = 211;
                                 hadron2Type = 2212;
                             }
+
+                            if (std::abs((hadron1.particle + hadron2.particle).Mag() - lambdaMass) > 0.1) {
+                                counterQ += 1;
+                                continue;
+                            }
                             TLorentzVector dihadronMomentum = hadron1.particle + hadron2.particle;
                             TVector3 dihadronDisplacement = TVector3(q.vertex.position[0] - p.vertex.position[0],
                                                                      q.vertex.position[1] - p.vertex.position[1],
